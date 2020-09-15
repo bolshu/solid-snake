@@ -1,14 +1,21 @@
-import Canvas, { TContext } from './Canvas';
-import Game from './Game/Game';
+import { TDirecton } from './types';
+import Model from './Model';
+import View from './View';
 
 class App {
-  private readonly context: TContext;
+  public model: Model;
 
-  private game: Game;
+  public view: View;
 
   constructor() {
-    this.context = Canvas.getInstance().context;
-    this.game = new Game(this.context);
+    this.model = new Model();
+    this.view = new View();
+
+    this.tick = this.tick.bind(this);
+    this.keydownHandler = this.keydownHandler.bind(this);
+
+    App.setStyles();
+    this.addKeydownListener();
   }
 
   private static setStyles(): void {
@@ -20,9 +27,39 @@ class App {
     body.style.height = '100vh';
   }
 
+  private restart(): void {
+    this.model.resetValues();
+  }
+
+  private keydownHandler(e: KeyboardEvent): void {
+    const direction = <TDirecton>e.code.toUpperCase().replace('ARROW', '').trim();
+
+    this.model.setNextDirection(direction);
+
+    if (this.model.getIsCrashed) {
+      this.restart();
+    }
+  }
+
+  private addKeydownListener(): void {
+    window.addEventListener('keydown', this.keydownHandler, true);
+  }
+
+  private tick(): void {
+    this.model.update();
+    this.view.update({
+      gardenSize: this.model.getGardenSize,
+      snake: this.model.getSnake,
+      apple: this.model.getApple,
+      score: this.model.getScore,
+      isCrashed: this.model.getIsCrashed,
+    });
+
+    window.setTimeout(this.tick, this.model.getSpeed);
+  }
+
   public init(): void {
-    App.setStyles();
-    this.game.start();
+    this.tick();
   }
 }
 

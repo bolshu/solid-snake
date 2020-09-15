@@ -1,11 +1,11 @@
-export type TContext = CanvasRenderingContext2D;
+import { TContext } from './types';
 
 type TCanvas = HTMLCanvasElement;
 
 class Canvas {
-  private ctx: TContext;
+  private readonly ctx: TContext;
 
-  private el: TCanvas;
+  private readonly el: TCanvas;
 
   private static instance: Canvas;
 
