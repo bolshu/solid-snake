@@ -1,11 +1,7 @@
-# Frontend app template without frameworks
+# Snake on typescript
 
 ### Run and dev
 
 ```
 npm run fun
 ```
-
-### Config
-
-Check webpack.config.js
