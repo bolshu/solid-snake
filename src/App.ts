@@ -1,29 +1,7 @@
-import Canvas, { TContext } from './Canvas';
-import Game from './Game/Game';
+// import Canvas, { TContext } from './Canvas';
+// import Model from './Model';
 
-class App {
-  private readonly context: TContext;
+// class App {
+// }
 
-  private game: Game;
-
-  constructor() {
-    this.context = Canvas.getInstance().context;
-    this.game = new Game(this.context);
-  }
-
-  private static setStyles(): void {
-    const { body } = document!;
-
-    body.style.padding = '0px';
-    body.style.margin = '0px';
-    body.style.width = '100vw';
-    body.style.height = '100vh';
-  }
-
-  public init(): void {
-    App.setStyles();
-    this.game.start();
-  }
-}
-
-export default App;
+// export default App;
