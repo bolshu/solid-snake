@@ -129,7 +129,7 @@ class Model {
     }
   }
 
-  private isOufOfField(): boolean {
+  private isOufOfGarden(): boolean {
     return this.currentSnake.some(([col, row]) => (
       col > this.getGardenSize
       || col < 1
@@ -149,7 +149,7 @@ class Model {
   }
 
   private isCrashed(): boolean {
-    return this.isOufOfField() || this.isSnakeEatsItself();
+    return this.isOufOfGarden() || this.isSnakeEatsItself();
   }
 
   private static isDirectionAvailable(direction: TDirecton): boolean {

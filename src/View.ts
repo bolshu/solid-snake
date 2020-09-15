@@ -1,5 +1,5 @@
-import { TContext } from './Views/types';
 import {
+  TContext,
   TGardenSize,
   TCoordinates,
   TScoreValue,

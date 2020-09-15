@@ -1,3 +1,5 @@
+export type TContext = CanvasRenderingContext2D;
+
 export type TGardenSize = number;
 
 export type TScoreValue = number;

@@ -5,17 +5,15 @@ import AbstractCelledComponent from './AbstractCelledComponent';
 class Snake extends AbstractCelledComponent<TCoordinates[]> {
   public draw(coordinates: TCoordinates[]): void {
     coordinates.forEach(([col, row], i) => {
-      const x = this.cellSize * col;
-      const y = this.cellSize * row;
-      const w = this.cellSize;
-      const h = this.cellSize;
+      const fill = i === 0 ? COLORS.SNAKE_HEAD : COLORS.SNAKE;
 
-      this.context.fillStyle = i === 0 ? COLORS.SNAKE_HEAD : COLORS.SNAKE;
-      this.context.fillRect(x, y, w, h);
-
-      this.context.strokeStyle = COLORS.WHITE;
-      this.context.lineWidth = this.lineWidth;
-      this.context.strokeRect(x, y, w, h);
+      this.drawCell(
+        this.cellSize * col,
+        this.cellSize * row,
+        this.cellSize,
+        this.cellSize,
+        fill,
+      );
     });
   }
 }

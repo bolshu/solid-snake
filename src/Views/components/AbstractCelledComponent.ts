@@ -1,11 +1,10 @@
-import {
-  TCellWidth,
-  TCellHeight,
-  TCellX,
-  TCellY,
-} from '../types';
 import COLORS, { TColor } from '../colors';
 import AbstractComponent from './AbstractComponent';
+
+type TCellWidth = number;
+type TCellHeight = number;
+type TCellX = number;
+type TCellY = number;
 
 abstract class AbstractCelledComponent<D> extends AbstractComponent<D> {
   protected readonly lineWidth: number = 1;

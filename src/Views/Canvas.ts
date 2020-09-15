@@ -1,4 +1,4 @@
-import { TContext } from './types';
+import { TContext } from '../types';
 
 type TCanvas = HTMLCanvasElement;
 

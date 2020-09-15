@@ -42,7 +42,7 @@ class App {
   }
 
   private addKeydownListener(): void {
-    window.addEventListener('keydown', this.keydownHandler, true);
+    window.addEventListener('keydown', this.keydownHandler);
   }
 
   private tick(): void {
