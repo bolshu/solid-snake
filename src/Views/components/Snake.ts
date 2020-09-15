@@ -10,7 +10,7 @@ class Snake extends AbstractCelledComponent<TCoordinates[]> {
       const w = this.cellSize;
       const h = this.cellSize;
 
-      this.context.fillStyle = i === 0 ? COLORS.RED : COLORS.TOMATO;
+      this.context.fillStyle = i === 0 ? COLORS.SNAKE_HEAD : COLORS.SNAKE;
       this.context.fillRect(x, y, w, h);
 
       this.context.strokeStyle = COLORS.WHITE;

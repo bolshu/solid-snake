@@ -2,12 +2,16 @@ import { TScoreValue } from '../../types';
 import COLORS from '../colors';
 import AbstractComponent from './AbstractComponent';
 
+export type TScoreArg = {
+  score: TScoreValue;
+};
+
 class Score extends AbstractComponent<TScoreValue> {
   public draw(score: TScoreValue): void {
-    this.context.font = '30px Comic Sans MS';
-    this.context.fillStyle = COLORS.WHITE;
+    this.context.font = '30px monospace';
+    this.context.fillStyle = COLORS.STROKE;
     this.context.textAlign = 'left';
-    this.context.fillText(score.toString(), 0, 0);
+    this.context.fillText(`Score: ${score}`, 40, 30);
   }
 }
 

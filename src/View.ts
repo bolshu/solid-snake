@@ -1,27 +1,26 @@
-import { TContext } from './types';
+import { TContext } from './Views/types';
 import {
   TGardenSize,
   TCoordinates,
   TScoreValue,
-} from '../types';
-import COLORS from './colors';
+} from './types';
+import COLORS, { TColor } from './Views/colors';
 
-import Canvas from './Canvas';
-import Garden from './components/Garden';
-import Snake from './components/Snake';
-import Apple from './components/Apple';
-import Score from './components/Score';
+import Canvas from './Views/Canvas';
+import Garden from './Views/components/Garden';
+import Snake from './Views/components/Snake';
+import Apple from './Views/components/Apple';
+import Score from './Views/components/Score';
 
 type TRenderParams = {
-  garden: TGardenSize;
+  gardenSize: TGardenSize;
   snake: TCoordinates[];
   apple: TCoordinates;
   score: TScoreValue;
+  isCrashed: boolean;
 };
 
 class View {
-  private readonly canvas: Canvas;
-
   private readonly context: TContext;
 
   private readonly garden: Garden;
@@ -32,13 +31,16 @@ class View {
 
   private readonly score: Score;
 
+  private backgroundColor: TColor;
+
   constructor() {
-    this.canvas = Canvas.getInstance();
-    this.context = this.canvas.context;
+    this.context = Canvas.getInstance().context;
     this.garden = new Garden(this.context);
     this.snake = new Snake(this.context);
     this.apple = new Apple(this.context);
     this.score = new Score(this.context);
+
+    this.backgroundColor = COLORS.BACKGROUND;
   }
 
   private clear(): void {
@@ -46,10 +48,16 @@ class View {
     this.context.clearRect(0, 0, width, height);
   }
 
+  public toggleBackground(): void {
+    this.backgroundColor = this.backgroundColor === COLORS.BACKGROUND
+      ? COLORS.APPLE
+      : COLORS.BACKGROUND;
+  }
+
   private drawBackground(): void {
     const { width, height } = this.context.canvas;
 
-    this.context.fillStyle = COLORS.BLACK;
+    this.context.fillStyle = this.backgroundColor;
     this.context.fillRect(0, 0, width, height);
   }
 
@@ -70,11 +78,18 @@ class View {
   }
 
   private drawAll({
-    garden,
+    gardenSize: garden,
     snake,
     apple,
     score,
+    isCrashed,
   }: TRenderParams): void {
+    if (isCrashed) {
+      this.toggleBackground();
+    } else {
+      this.backgroundColor = COLORS.BACKGROUND;
+    }
+
     this.drawBackground();
     this.drawGarden(garden);
     this.drawSnake(snake);

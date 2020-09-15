@@ -1,8 +1,8 @@
 import AbstractCelledComponent from './AbstractCelledComponent';
-import { TFieldSize } from '../../Game/Elements/Field';
+import { TGardenSize } from '../../types';
 
-class Garden extends AbstractCelledComponent<TFieldSize> {
-  public draw(size: TFieldSize): void {
+class Garden extends AbstractCelledComponent<TGardenSize> {
+  public draw(size: TGardenSize): void {
     this.drawCell(
       this.cellSize,
       this.cellSize,

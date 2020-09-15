@@ -3,44 +3,52 @@ import {
   TScoreValue,
   TSpeedValue,
   TCoordinates,
-  TDirectonKeys,
+  TDirecton,
 } from './types';
 
-const FIELD_SIZE: TGardenSize = 10;
+const DIRECTIONS: TDirecton[] = ['UP', 'RIGHT', 'DOWN', 'LEFT'];
+const GARDEN_SIZE: TGardenSize = 10;
 const SPEED = 500;
+const SPEED_UP_VALUE = 20;
 const SCORE: TScoreValue = 0;
-const DIRECTION: TDirectonKeys = 'DOWN';
+const DIRECTION: TDirecton = 'DOWN';
 const SNAKE: TCoordinates[] = [[1, 5], [1, 4], [1, 3], [1, 2], [1, 1]];
 
 class Model {
-  public readonly fieldSize = FIELD_SIZE;
+  public readonly gardenSize = GARDEN_SIZE;
 
   private speed: TSpeedValue;
 
   private score: TScoreValue;
 
-  private direction: TDirectonKeys;
+  private currentDirection: TDirecton;
 
-  private field: TCoordinates[];
+  private nextDirection: TDirecton;
 
-  private snake: TCoordinates[];
+  private readonly garden: TCoordinates[];
+
+  private currentSnake: TCoordinates[];
+
+  private prevSnake: TCoordinates[];
 
   private apple: TCoordinates;
 
   constructor() {
     this.speed = SPEED;
     this.score = SCORE;
-    this.direction = DIRECTION;
-    this.field = this.getFieldCoordinates();
-    this.snake = SNAKE;
-    this.apple = this.getFoodCoordinates();
+    this.currentDirection = DIRECTION;
+    this.nextDirection = DIRECTION;
+    this.garden = this.getGardenCoordinates();
+    this.currentSnake = SNAKE;
+    this.prevSnake = SNAKE;
+    this.apple = this.getAppleCoordinates();
   }
 
-  private getFieldCoordinates(): TCoordinates[] {
+  private getGardenCoordinates(): TCoordinates[] {
     const result: TCoordinates[] = [];
 
-    for (let col = 0; col < this.fieldSize; col += 1) {
-      for (let row = 0; row < this.fieldSize; row += 1) {
+    for (let col = 1; col <= this.gardenSize; col += 1) {
+      for (let row = 1; row <= this.gardenSize; row += 1) {
         result.push([col, row]);
       }
     }
@@ -48,42 +56,43 @@ class Model {
     return result;
   }
 
-  private getAvailableCoordinates(): TCoordinates[] {
-    return this.field.filter(([fieldCol, fieldRow]) => (
-      this.snake.every(([snakeCol, snakeRow]) => (
-        fieldCol !== snakeCol
-        && fieldRow !== snakeRow
+  private getEmptyCoordinates(): TCoordinates[] {
+    return this.garden.filter(([gardenCol, gardenRow]) => (
+      this.currentSnake.every(([snakeCol, snakeRow]) => !(
+        gardenCol === snakeCol
+        && gardenRow === snakeRow
       ))
     ));
   }
 
-  private getFoodCoordinates(): TCoordinates {
-    const availableCoordinates = this.getAvailableCoordinates();
-    const randomCoordinatesIndex = Math.floor(Math.random() * availableCoordinates.length - 1);
+  private getAppleCoordinates(): TCoordinates {
+    const emptyCoordinates = this.getEmptyCoordinates();
+    const randomEmptyCoordinatesIndex = Math.round(Math.random() * this.getGardenSize + 1);
 
-    return availableCoordinates[randomCoordinatesIndex];
-  }
-
-  private updateFood(): void {
-    this.apple = this.getFoodCoordinates();
+    return emptyCoordinates[randomEmptyCoordinatesIndex];
   }
 
   private getSnakeHead(): TCoordinates {
-    return this.snake[0];
+    return this.currentSnake[0];
   }
 
   private isSnakeGetApple(): boolean {
     const [snakeHeadCol, snakeHeadRow] = this.getSnakeHead();
-    const [foodCol, foodRow] = this.apple;
+    const [appleCol, appleRow] = this.apple;
 
-    return snakeHeadCol === foodCol && snakeHeadRow === foodRow;
+    return snakeHeadCol === appleCol && snakeHeadRow === appleRow;
+  }
+
+  private updateApple(): void {
+    if (this.isSnakeGetApple()) {
+      this.apple = this.getAppleCoordinates();
+    }
   }
 
   private growSnake(): void {
-    const [foodCol, foodRow] = this.apple;
-    const next: TCoordinates[] = [[foodCol, foodRow], ...this.snake];
-
-    this.snake = next.slice();
+    this.upScore();
+    this.upSpeed();
+    this.currentSnake = [this.apple, ...this.prevSnake];
   }
 
   private moveSnake(): void {
@@ -91,47 +100,48 @@ class Model {
     let nextCol = snakeCol;
     let nextRow = snakeRow;
 
-    if (this.direction === 'UP') {
+    if (this.currentDirection === 'UP') {
       nextRow -= 1;
     }
 
-    if (this.direction === 'RIGHT') {
+    if (this.currentDirection === 'RIGHT') {
       nextCol += 1;
     }
 
-    if (this.direction === 'DOWN') {
+    if (this.currentDirection === 'DOWN') {
       nextRow += 1;
     }
 
-    if (this.direction === 'LEFT') {
+    if (this.currentDirection === 'LEFT') {
       nextCol -= 1;
     }
 
-    const next: TCoordinates[] = [[nextCol, nextRow], ...this.snake];
-    this.snake = next.slice(0, -1);
+    this.prevSnake = this.currentSnake;
+    const next: TCoordinates[] = [[nextCol, nextRow], ...this.currentSnake];
+    this.currentSnake = next.slice(0, -1);
   }
 
   private updateSnake(): void {
+    this.moveSnake();
+
     if (this.isSnakeGetApple()) {
       this.growSnake();
-    } else {
-      this.moveSnake();
     }
   }
 
   private isOufOfField(): boolean {
-    return this.snake.some(([col, row]) => (
-      col > this.field.length
-      || col < 0
-      || row > this.field.length
-      || row < 0
+    return this.currentSnake.some(([col, row]) => (
+      col > this.getGardenSize
+      || col < 1
+      || row > this.getGardenSize
+      || row < 1
     ));
   }
 
   private isSnakeEatsItself(): boolean {
     const [headCol, headRow] = this.getSnakeHead();
 
-    return this.snake.some(([bodyCol, bodyRow], index) => (
+    return this.currentSnake.some(([bodyCol, bodyRow], index) => (
       index !== 0
       && headCol === bodyCol
       && headRow === bodyRow
@@ -142,13 +152,78 @@ class Model {
     return this.isOufOfField() || this.isSnakeEatsItself();
   }
 
-  private update(): void {
-    if (this.isCrashed()) {
-      this.speed = SPEED;
-    } else {
-      this.updateSnake();
-      this.updateFood();
+  private static isDirectionAvailable(direction: TDirecton): boolean {
+    return DIRECTIONS.includes(direction);
+  }
+
+  private isDirectionCorrect(direction: TDirecton): boolean {
+    return (
+      (this.currentDirection === 'UP' && direction !== 'DOWN')
+      || (this.currentDirection === 'LEFT' && direction !== 'RIGHT')
+      || (this.currentDirection === 'DOWN' && direction !== 'UP')
+      || (this.currentDirection === 'RIGHT' && direction !== 'LEFT')
+    );
+  }
+
+  private isDirectionValid(direction: TDirecton): boolean {
+    return this.isDirectionCorrect(direction) && Model.isDirectionAvailable(direction);
+  }
+
+  private upSpeed(): void {
+    this.speed -= SPEED_UP_VALUE;
+  }
+
+  private upScore(): void {
+    this.score += 1;
+  }
+
+  public setNextDirection(direction: TDirecton): void {
+    if (this.isDirectionValid(direction)) {
+      this.nextDirection = direction;
     }
+  }
+
+  public resetValues(): void {
+    this.speed = SPEED;
+    this.score = SCORE;
+    this.currentDirection = DIRECTION;
+    this.nextDirection = DIRECTION;
+    this.currentSnake = SNAKE;
+    this.prevSnake = SNAKE;
+    this.apple = this.getAppleCoordinates();
+  }
+
+  public update(): void {
+    if (!this.isCrashed()) {
+      this.updateSnake();
+      this.updateApple();
+    }
+
+    this.currentDirection = this.nextDirection;
+  }
+
+  get getGardenSize(): TGardenSize {
+    return this.gardenSize;
+  }
+
+  get getSnake(): TCoordinates[] {
+    return this.currentSnake;
+  }
+
+  get getApple(): TCoordinates {
+    return this.apple;
+  }
+
+  get getScore(): TScoreValue {
+    return this.score;
+  }
+
+  get getSpeed(): TSpeedValue {
+    return this.speed;
+  }
+
+  get getIsCrashed(): boolean {
+    return this.isCrashed();
   }
 }
 

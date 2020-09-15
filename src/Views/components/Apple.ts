@@ -9,7 +9,7 @@ class Apple extends AbstractCelledComponent<TCoordinates> {
       this.cellSize * row,
       this.cellSize,
       this.cellSize,
-      COLORS.TOMATO,
+      COLORS.APPLE,
     );
   }
 }
