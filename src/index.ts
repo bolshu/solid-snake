@@ -1,1 +1,4 @@
-console.log('AWESOME FRONTEND APP TEMPLATE');
+import App from './App';
+
+const app = new App();
+app.init();

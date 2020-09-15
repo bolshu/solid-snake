@@ -1,5 +1,4 @@
 const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const DIST_PATH = path.resolve(__dirname, 'dist');
@@ -10,7 +9,7 @@ const HTML_TEMPLATE = {
 
 module.exports = {
   entry: {
-    index: ['./src/index.ts', './src/index.css'],
+    index: ['./src/index.ts'],
   },
   output: {
     filename: '[name].js',
@@ -23,10 +22,6 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      {
-        test: /\.css$/i,
-        loader: ExtractTextPlugin.extract('css-loader', 'style-loader'),
-      },
     ],
   },
   resolve: {
@@ -38,7 +33,6 @@ module.exports = {
     port: 9000,
   },
   plugins: [
-    new ExtractTextPlugin('style.css'),
     new HtmlWebpackPlugin(HTML_TEMPLATE),
   ],
 };
