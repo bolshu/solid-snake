@@ -8,10 +8,10 @@ export type TScoreArg = {
 
 class Score extends AbstractComponent<TScoreValue> {
   public draw(score: TScoreValue): void {
-    this.context.font = '30px monospace';
+    this.context.font = `${this.cellSize / 2}px monospace`;
     this.context.fillStyle = COLORS.STROKE;
     this.context.textAlign = 'left';
-    this.context.fillText(`Score: ${score}`, 40, 30);
+    this.context.fillText(`Score: ${score}`, this.cellSize, 30);
   }
 }
 
